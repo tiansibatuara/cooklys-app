@@ -9,18 +9,21 @@ const Tab = createBottomTabNavigator();
 
 const MainNavigator = () => {
   return (
-    <Tab.Navigator
+    <Tab.Navigator 
       initialRouteName="Home"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#4169E1",
         tabBarLabelStyle: {
-            display: "none", // Hide the tab bar labels
+            display: "none",
           },
+        tabBarStyle: {
+          backgroundColor: '#fff',
+        },
       }}
     >
       <Tab.Screen
-        name="Home"
+        name="Product"
         component={ ProductNavigator }
         options={{
           tabBarLabel: "",

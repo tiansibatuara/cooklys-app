@@ -6,11 +6,15 @@ import {
   Image,
   FlatList,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import recipes from "../data/Recipes";
 import { useNavigation } from "@react-navigation/native";
+// import { db } from "../config";
+import { useSelector } from "react-redux";
+import { getProducts } from "../ProductReducer";
 
 const Popular = () => {
+  const cart = useSelector((state) => state.cart.cart);
   const navigation = useNavigation();
 
   const renderRecipeItem = ({ item }) => {
@@ -31,6 +35,23 @@ const Popular = () => {
       </View>
     );
   };
+
+  const product = useSelector((state) => state.product.product);
+    console.log("Product array", product);
+
+    // useEffect(() => {
+    //   if (product.length > 0) return;
+  
+    //   const fetchProducts = async () => {
+    //     const colRef = recipes(db, "types");
+    //     const docsSnap = await getDocs(colRef);
+    //     docsSnap.forEach((doc) => {
+    //       items.push(doc.data());
+    //     });
+    //     items?.map((service) => dispatch(getProducts(service)));
+    //   };
+    //   fetchProducts();
+    // }, []);
 
   return (
     <View>

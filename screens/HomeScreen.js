@@ -32,12 +32,23 @@ const HomeScreen = () => {
 
         {/* Search Bar */}
         <View style={styles.searchBar}>
-          <TextInput
-            placeholder="Search recipes here"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Search recipes here"
+              value={searchQuery}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={setSearchQuery}
+              returnKeyType="search"
+              onSubmitEditing={handleSearch}
+            />
+          </View>
+          <FontAwesome
+            onPress={handleSearch}
+            name="search"
+            size={24}
+            color="black"
           />
-          <FontAwesome onPress={handleSearch} name="search" size={24} color="black" />
         </View>
 
         {/* Categories Component */}
@@ -72,6 +83,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#FCFCFD",
     borderColor: "#C0C0C0",
     borderRadius: 10,
+  },
+  inputContainer: {
+    width: "90%",
   },
 });
 

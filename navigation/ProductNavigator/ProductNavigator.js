@@ -8,7 +8,10 @@ const Stack = createStackNavigator();
 
 const ProductNavigator = () => {
   return (
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{
+        headerStyle: { elevation: 0 },
+        cardStyle: { backgroundColor: '#FFFFFF' }
+    }}>
         <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
         <Stack.Screen options={{ headerShown: false }} name="ProductDetail" component={ProductDetailScreen} />
         <Stack.Screen options={{ headerShown: false }} name="SearchResults" component={SearchResultsScreen} />

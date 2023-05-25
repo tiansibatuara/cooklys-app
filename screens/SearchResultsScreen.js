@@ -40,8 +40,8 @@ const SearchResultsScreen = () => {
   const filteredRecipes = searchQuery
   ? recipes.filter(
       (recipe) =>
-        recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        recipe.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+        recipe.name.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
+        recipe.name.toLowerCase().startsWith(searchQuery.toLowerCase().trim())
     )
   : [];
 
@@ -60,6 +60,7 @@ const SearchResultsScreen = () => {
             color="black"
           />
         </View>
+        
         <Text style={styles.header}>Search Results for: {searchQuery}</Text>
 
         {filteredRecipes.length > 0 ? (
