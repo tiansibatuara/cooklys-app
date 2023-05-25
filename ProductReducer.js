@@ -13,8 +13,8 @@ export const productSlice = createSlice({
       const itemPresent = state.product.find(
         (item) => item.id === action.payload.id
       );
-      console.log(itemPresent)
       itemPresent.quantity++;
+      console.log(itemPresent);
     },
     decrementQty: (state, action) => {
       const itemPresent = state.product.find(
@@ -26,13 +26,19 @@ export const productSlice = createSlice({
           (item) => item.id !== action.payload.id
         );
         state.cart = removeItem;
+        console.log(itemPresent);
       } else {
         itemPresent.quantity--;
       }
+      console.log(itemPresent);
+    },
+    resetQuantity: (state) => {
+      state.products = [];
     },
   },
 });
 
-export const { getProducts, incrementQty, decrementQty } = productSlice.actions;
+export const { getProducts, incrementQty, decrementQty, resetQuantity } =
+  productSlice.actions;
 
 export default productSlice.reducer;

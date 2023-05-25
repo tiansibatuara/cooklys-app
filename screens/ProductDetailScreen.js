@@ -18,7 +18,11 @@ import {
   decrementQuantity,
   incrementQuantity,
 } from "../CartReducer";
+import { Ionicons } from "@expo/vector-icons";
 import { decrementQty, incrementQty } from "../ProductReducer";
+
+
+
 
 const ProductDetailScreen = () => {
   const navigation = useNavigation();
@@ -29,6 +33,7 @@ const ProductDetailScreen = () => {
   const product = useSelector((state) => state.product.product);
 
   const dispatch = useDispatch();
+  
   const cart = useSelector((state) => state.cart.cart);
   const addItemToCart = () => {
     dispatch(addToCart(recipe)); // cart
@@ -39,6 +44,10 @@ const ProductDetailScreen = () => {
     style: "currency",
     currency: "IDR",
   });
+
+  const handleCart = () => {
+    navigation.navigate("Cart");
+  };
 
   const toggleFavorite = () => {
     const updatedRecipe = {
@@ -58,13 +67,26 @@ const ProductDetailScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <MaterialIcons
+        <Ionicons
           onPress={() => navigation.goBack()}
-          name="arrow-back-ios"
-          size={24}
+          name="ios-chevron-back"
+          size={32}
+          // backgroundColor={"red"}
           color="black"
           suppressHighlighting={true}
         />
+          <Ionicons
+            onPress={handleCart}
+            name="ios-cart-outline"
+            size={32}
+            color="black"
+            // backgroundColor={"red"}
+            suppressHighlighting={true}
+          />
+      </View>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
+        <Text style={styles.detailName}>{recipe.name}</Text>
         <TouchableOpacity onPress={toggleFavorite}>
           <MaterialIcons
             name={isFavorite ? "favorite" : "favorite-border"}
@@ -72,10 +94,6 @@ const ProductDetailScreen = () => {
             color={isFavorite ? "red" : "black"}
           />
         </TouchableOpacity>
-      </View>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
-        <Text style={styles.detailName}>{recipe.name}</Text>
       </ScrollView>
 
       <View
@@ -113,7 +131,7 @@ const ProductDetailScreen = () => {
             <Text
               style={styles.textNumber}
             >
-              {product.find((item) => item.id === `${recipe.id}`).quantity}
+              {product.find((item) => item.id === `${recipe.id}`).quantity }
             </Text>
 
             <Pressable
@@ -166,33 +184,11 @@ const ProductDetailScreen = () => {
 
         <Text style={styles.foodPrice}>
           {formatter.format(
-            product.find((item) => item.id === `${recipe.id}`).quantity *
+            (product.find((item) => item.id === `${recipe.id}`).quantity) *
               product.find((item) => item.id === `${recipe.id}`).price
           )}
         </Text>
       </View>
-      {/* <Pressable
-        style={{
-          position: "absolute",
-          marginBottom: 20,
-          bottom: 20,
-          left: "40%",
-        }}
-      >
-        <Text
-          style={{
-            borderColor: "gray",
-            borderRadius: 8,
-            borderWidth: 0.8,
-            color: "#088F8F",
-            textAlign: "center",
-            padding: 5,
-            fontFamily: "psbold",
-          }}
-        >
-          ADD TO CART
-        </Text>
-      </Pressable> */}
     </SafeAreaView>
   );
 };

@@ -12,13 +12,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   cleanCart,
-  decrementQuantity,
-  incrementQuantity,
   emptyQuantity,
 } from "../CartReducer";
-import { decrementQty, incrementQty, emptyQty } from "../ProductReducer";
+import {
+  getProducts,
+  resetQuantity,
+} from "../ProductReducer";
 import { useNavigation } from "@react-navigation/native";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc } from "firebase/firestore";
 import { auth, db } from "../config";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
 
@@ -34,18 +35,31 @@ const CheckoutScreen = () => {
 
   const userUid = auth.currentUser.uid;
 
+  //   const placeOrder = async () => {
+  //     navigation.navigate("Home");
+  //     dispatch(cleanCart());
+  //     await setDoc(
+  //       doc(db, "orders", `${userUid}`),
+  //       {
+  //         orders: { ...cart },
+  //       },
+  //       {
+  //         merge: true,
+  //       }
+  //     );
+  //   };
+
   const placeOrder = async () => {
-    navigation.navigate("MainNavigator");
+    navigation.navigate("Home");
     dispatch(cleanCart());
-    await setDoc(
-      doc(db, "users", `${userUid}`),
-      {
-        orders: { ...cart },
-      },
-      {
-        merge: true,
-      }
-    );
+    dispatch(emptyQuantity()); // Reset quantity in cart
+    dispatch(resetQuantity());
+    const orderData = {
+      uid: userUid,
+      orders: { ...cart },
+    };
+    const ordersCollectionRef = collection(db, "orders");
+    await addDoc(ordersCollectionRef, orderData);
   };
 
   const formatter = new Intl.NumberFormat(undefined, {
@@ -55,7 +69,7 @@ const CheckoutScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-        <View style={styles.topBarContainer}>
+      <View style={styles.topBarContainer}>
         <View style={styles.topBar}>
           <MaterialIcons
             onPress={() => navigation.goBack()}
@@ -69,22 +83,13 @@ const CheckoutScreen = () => {
           </View>
         </View>
       </View>
-      <ScrollView>
+      <ScrollView style={styles.contentContainer}>
         <View
           style={{
-            padding: 10,
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-        </View>
-        <View
-          style={{
-            borderRadius: 12,
-            margin: 10,
-            padding: 10,
-            backgroundColor: "white",
-            gap: 15,
+            // margin: 10,
+            // paddingHorizontal: 10,
+            // backgroundColor: "black",
+            gap: 4,
           }}
         >
           {cart.map((item, index) => (
@@ -92,9 +97,9 @@ const CheckoutScreen = () => {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 15,
+                padding: 12,
+                gap: 8,
                 backgroundColor: "white",
-                borderRadius: 15,
               }}
               key={index}
             >
@@ -102,17 +107,22 @@ const CheckoutScreen = () => {
               <View style={styles.innerContainer}>
                 <View style={styles.nameContainer}>
                   <Text style={styles.foodName}>{item.name}</Text>
-                  <Text style={styles.foodPrice}>
-                    {formatter.format(item.price)}
-                  </Text>
+                  <View style={styles.foodPriceContainer}>
+                    <Text style={styles.foodPrice}>
+                      {formatter.format(item.price)}
+                    </Text>
+                  </View>
                 </View>
                 <View>
-                  <Text style={styles.foodQuantity}>x{item.quantity}</Text>
+                  <Text style={styles.foodQuantity}>x {item.quantity}</Text>
                 </View>
               </View>
             </View>
           ))}
-          <Text style={styles.totalPrice}>{formatter.format(total)}</Text>
+          <View style={styles.subtotalContainer}>
+            <Text style={{ fontFamily: "psbold" }}>Subtotal</Text>
+            <Text style={styles.totalPrice}>{formatter.format(total)}</Text>
+          </View>
         </View>
         <View
           style={{
@@ -143,7 +153,7 @@ const CheckoutScreen = () => {
                 justifyContent: "center",
               }}
             >
-              <Ionicons name="md-cash" size={30} color={"black"} />
+              <Ionicons name="cash-outline" size={24} color="black" />
             </View>
           </View>
           <View>
@@ -228,15 +238,16 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   image: {
-    width: 40,
-    height: 40,
+    width: 52,
+    height: 52,
     borderRadius: 10,
     resizeMode: "contain",
   },
   innerContainer: {
     flexDirection: "column",
     justifyContent: "space-between",
-    width: 295,
+    // backgroundColor: "black",
+    width: "85%",
   },
   dataContainer: {
     flexDirection: "row",
@@ -248,11 +259,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   foodName: {
-    fontSize: 15,
+    fontSize: 14,
+    fontFamily: "psbold",
     fontWeight: "700",
     color: "black",
+    // backgroundColor: "blue",
   },
   foodPrice: {
+    justifyContent: "flex-start",
+    fontFamily: "psbold",
     fontSize: 12,
     fontWeight: "700",
     color: "black",
@@ -263,10 +278,11 @@ const styles = StyleSheet.create({
   },
   totalPrice: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "red",
+    fontFamily: "psbold",
+    color: "black",
     textAlign: "right",
-    marginBottom: 10,
+    // marginBottom: 10,
+    // backgroundColor: "black",
   },
   paymentMethod: {
     fontSize: 15,
@@ -313,15 +329,11 @@ const styles = StyleSheet.create({
     padding: 8,
     width: "50%",
   },
-  itemCard: {
-    borderWidth: 0.8,
-    borderColor: "#C0C0C0",
-    borderRadius: 30,
-    paddingTop: 0,
-    paddingLeft: 0,
-    paddingRight: 0,
-    paddingBottom: 8,
-    alignItems: "center",
+  foodPriceContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    // backgroundColor: "yellow",
+    width: "36%",
   },
   recipeImage: {
     width: "100%",
@@ -350,5 +362,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "63%",
     alignItems: "center",
+  },
+  subtotalContainer: {
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
+    padding: 12,
+    backgroundColor: "white",
+    // height: 40,
   },
 });
