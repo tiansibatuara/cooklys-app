@@ -58,6 +58,7 @@ const SearchResultsScreen = () => {
             name="arrow-back-ios"
             size={24}
             color="black"
+            suppressHighlighting={true}
           />
         </View>
         

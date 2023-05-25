@@ -12,12 +12,33 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import recipes from "../data/Recipes";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addToCart,
+  decrementQuantity,
+  incrementQuantity,
+} from "../CartReducer";
+import { decrementQty, incrementQty } from "../ProductReducer";
 
 const ProductDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { recipe } = route.params;
+  console.log("recipe", recipe.id);
   const [isFavorite, setIsFavorite] = useState(recipe.favorite);
+  const product = useSelector((state) => state.product.product);
+
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart.cart);
+  const addItemToCart = () => {
+    dispatch(addToCart(recipe)); // cart
+    dispatch(incrementQty(recipe)); // product
+  };
+
+  const formatter = new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: "IDR",
+  });
 
   const toggleFavorite = () => {
     const updatedRecipe = {
@@ -53,26 +74,104 @@ const ProductDetailScreen = () => {
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {/* <View style={styles.header}>
-          <MaterialIcons
-            onPress={() => navigation.goBack()}
-            name="arrow-back-ios"
-            size={24}
-            color="black"
-            suppressHighlighting= {true}
-          />
-          <TouchableOpacity onPress={toggleFavorite}>
-            <MaterialIcons
-              name={isFavorite ? "favorite" : "favorite-border"}
-              size={24}
-              color={isFavorite ? "red" : "black"}
-            />
-          </TouchableOpacity>
-        </View> */}
         <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
         <Text style={styles.detailName}>{recipe.name}</Text>
       </ScrollView>
-      <Pressable
+
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginVertical: 20,
+        }}
+      >
+        {cart.some((c) => c.id === recipe.id) ? (
+          <Pressable
+            style={{
+              flexDirection: "row",
+              backgroundColor: "white",
+              gap: 10,
+              borderRadius: 13,
+            }}
+          >
+            <Pressable
+              onPress={() => {
+                dispatch(decrementQuantity(recipe)); // cart
+                dispatch(decrementQty(recipe)); // product
+              }}
+              // onPress={decrementQuantityHandler}
+              style={styles.quantityHandler}
+            >
+              <Text
+                style={styles.textSymbol}
+              >
+                -
+              </Text>
+            </Pressable>
+
+            <Text
+              style={styles.textNumber}
+            >
+              {product.find((item) => item.id === `${recipe.id}`).quantity}
+            </Text>
+
+            <Pressable
+              onPress={() => {
+                console.log(recipe);
+                dispatch(incrementQuantity(recipe)); // cart
+                dispatch(incrementQty(recipe)); //product
+              }}
+              // onPress={incrementQuantityHandler}
+              style={styles.quantityHandler}
+            >
+              <Text style={styles.textSymbol}>+</Text>
+            </Pressable>
+          </Pressable>
+        ) : (
+          <Pressable
+            style={{
+              flexDirection: "row",
+              backgroundColor: "white",
+              gap: 10,
+              borderRadius: 13,
+            }}
+          >
+            <Pressable
+              // onPress={decrementQuantityHandler}
+              style={styles.quantityHandler}
+            >
+              <Text style={styles.textSymbol}>-</Text>
+            </Pressable>
+
+            <Text
+              style={styles.textNumber}
+            >
+              {product.find((item) => item.id === `${recipe.id}`).quantity}
+            </Text>
+
+            <Pressable
+              onPress={addItemToCart}
+              // onPress={incrementQuantityHandler}
+              style={styles.quantityHandler}
+            >
+              <Text
+                style={styles.textSymbol}
+              >
+                +
+              </Text>
+            </Pressable>
+          </Pressable>
+        )}
+
+        <Text style={styles.foodPrice}>
+          {formatter.format(
+            product.find((item) => item.id === `${recipe.id}`).quantity *
+              product.find((item) => item.id === `${recipe.id}`).price
+          )}
+        </Text>
+      </View>
+      {/* <Pressable
         style={{
           position: "absolute",
           marginBottom: 20,
@@ -93,7 +192,7 @@ const ProductDetailScreen = () => {
         >
           ADD TO CART
         </Text>
-      </Pressable>
+      </Pressable> */}
     </SafeAreaView>
   );
 };
@@ -124,6 +223,24 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: "psbold",
     marginTop: 12,
+  },
+  quantityHandler: {
+    width: 26,
+    height: 26,
+    justifyContent: "center",
+    alignContent: "center",
+  },
+  textSymbol: {
+    fontSize: 16,
+    color: "#088F8F",
+    paddingHorizontal: 6,
+    textAlign: "center",
+  },
+  textNumber :{
+    fontSize: 16,
+    color: "#088F8F",
+    paddingHorizontal: 8,
+    fontWeight: "bold",
   },
 });
 

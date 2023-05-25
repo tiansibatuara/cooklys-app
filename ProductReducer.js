@@ -13,6 +13,7 @@ export const productSlice = createSlice({
       const itemPresent = state.product.find(
         (item) => item.id === action.payload.id
       );
+      console.log(itemPresent)
       itemPresent.quantity++;
     },
     decrementQty: (state, action) => {

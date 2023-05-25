@@ -19,6 +19,7 @@ const MainNavigator = () => {
           },
         tabBarStyle: {
           backgroundColor: '#fff',
+          borderTopWidth: 0
         },
       }}
     >
