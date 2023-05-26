@@ -26,6 +26,7 @@ const CartScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cart);
+
   const total = cart
     .map((item) => item.quantity * item.price)
     .reduce((curr, prev) => curr + prev, 0);
@@ -34,6 +35,10 @@ const CartScreen = () => {
     style: "currency",
     currency: "IDR",
   });
+
+  const handleShop = () => {
+    navigation.navigate("Home");
+  };
 
   return (
     //     <SafeAreaView style={styles.container}>
@@ -64,10 +69,17 @@ const CartScreen = () => {
           </View>
         </View>
       </View>
-      <ScrollView style={styles.contentContainer}>
+      <ScrollView
+        style={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {total === 0 ? (
           <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <Text style={{ marginTop: 40 }}>Your cart is empty</Text>
+            <Text
+              style={{ marginTop: 40, fontFamily: "psregular", fontSize: 20 }}
+            >
+              Your cart is empty
+            </Text>
           </View>
         ) : (
           <>
@@ -194,7 +206,7 @@ const CartScreen = () => {
         </Pressable>
       ) : (
         <Pressable
-          onPress={() => navigation.goBack()}
+          onPress={handleShop}
           style={{
             backgroundColor: "#4169E1",
             paddingVertical: 15,

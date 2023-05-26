@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,16 +11,31 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
-import recipes from "../data/Recipes";
+// import recipes from "../data/Recipes";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../config";
-
-
 
 const SearchResultsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { searchQuery } = route.params;
+
+  const [recipes, setRecipes] = useState([]);
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "recipes"));
+        const recipesData = querySnapshot.docs.map((doc) => doc.data());
+        setRecipes(recipesData);
+        console.log(recipesData);
+      } catch (error) {
+        console.log("Error fetching recipes:", error);
+      }
+    };
+
+    fetchRecipes();
+  }, []);
 
   const renderFilteredItem = ({ item }) => {
     const handleCardPress = () => {
@@ -42,20 +57,25 @@ const SearchResultsScreen = () => {
   };
 
   const filteredRecipes = searchQuery
-  ? recipes.filter(
-      (recipe) =>
-        recipe.name.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-        recipe.name.toLowerCase().startsWith(searchQuery.toLowerCase().trim())
-    )
-  : [];
-
-
-  
+    ? recipes.filter(
+        (recipe) =>
+          recipe.name &&
+          (recipe.name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase().trim()) ||
+            recipe.name
+              .toLowerCase()
+              .startsWith(searchQuery.toLowerCase().trim()))
+      )
+    : [];
 
   // Filter the data source (e.g., recipes) based on the searchQuery
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.contentContainer}>
+      <ScrollView
+        style={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.topBar}>
           <MaterialIcons
             onPress={() => navigation.goBack()}
@@ -65,7 +85,7 @@ const SearchResultsScreen = () => {
             suppressHighlighting={true}
           />
         </View>
-        
+
         <Text style={styles.header}>Search Results for: {searchQuery}</Text>
 
         {filteredRecipes.length > 0 ? (
@@ -99,6 +119,7 @@ const styles = StyleSheet.create({
   header: {
     fontFamily: "psbold",
     fontSize: 20,
+    marginBottom: 12,
   },
   logo: {
     width: 20,

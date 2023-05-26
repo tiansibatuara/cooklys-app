@@ -1,5 +1,12 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView } from 'react-native';
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
 const OrderDetailScreen = ({ route, navigation }) => {
@@ -34,15 +41,23 @@ const OrderDetailScreen = ({ route, navigation }) => {
           </View>
         </View>
       </View>
-      <ScrollView style={styles.contentContainer}>
+      <ScrollView
+        style={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {Object.keys(order.orders).map((key) => {
           const orderData = order.orders[key];
           return (
             <View key={key} style={styles.orderCard}>
-              <Image source={{ uri: orderData.image }} style={styles.orderImage} />
+              <Image
+                source={{ uri: orderData.image }}
+                style={styles.orderImage}
+              />
               <View style={styles.orderDetails}>
                 <Text style={styles.orderName}>{orderData.name}</Text>
-                <Text style={styles.orderQuantity}>Quantity: {orderData.quantity}</Text>
+                <Text style={styles.orderQuantity}>
+                  Quantity: {orderData.quantity}
+                </Text>
               </View>
             </View>
           );
@@ -66,12 +81,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   orderCard: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
     padding: 16,
     marginBottom: 4,
   },
@@ -83,31 +98,31 @@ const styles = StyleSheet.create({
   },
   orderDetails: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   orderName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   orderQuantity: {
     fontSize: 16,
   },
   totalContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 16,
     paddingTop: 16,
     marginHorizontal: 12,
   },
   totalText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   totalPrice: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   topBarContainer: {
     paddingHorizontal: 12,

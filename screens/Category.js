@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
-// import recipes from "../data/Recipes";
 import { useSelector, useDispatch } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import { decrementQty, incrementQty } from "../ProductReducer";
@@ -29,14 +28,11 @@ const Category = () => {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        // const querySnapshot = await getDocs(collection(db, "recipes"));
-        console.log("testkirim", category)
         const querySnapshot = await getDocs(
-          query(collection(db, "recipes"), where("category", "==", category))
+          query(collection(db, "recipes"), where("categories", "==", category))
         );
         const recipesData = querySnapshot.docs.map((doc) => doc.data());
         setRecipes(recipesData);
-        console.log(recipesData);
       } catch (error) {
         console.log("Error fetching recipes:", error);
       }
@@ -66,12 +62,47 @@ const Category = () => {
     );
   };
 
-  console.log("test",recipes)
+  let categoryName = "";
+  switch (category) {
+    case "app":
+      categoryName = "Appetizer";
+      break;
+    case "main":
+      categoryName = "Main";
+      break;
+    case "des":
+      categoryName = "Dessert";
+      break;
+    case "veg":
+      categoryName = "Vegan";
+      break;
+    case "mic":
+      categoryName = "Michelin";
+      break;
+    default:
+      categoryName = "";
+      break;
+  }
+
   return (
-    <SafeAreaView>
-      <ScrollView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topBarContainer}>
+        <View style={styles.topBar}>
+          <MaterialIcons
+            onPress={() => navigation.goBack()}
+            name="arrow-back-ios"
+            size={24}
+            color="black"
+            suppressHighlighting={true}
+          />
+          <View>
+            <Text style={styles.titleText}>Recipes</Text>
+          </View>
+        </View>
+      </View>
+      <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.title}>
-          <Text style={styles.title}>{category} Recipes</Text>
+          <Text style={styles.title}>{categoryName} Recipes</Text>
           <FlatList
             data={recipes}
             renderItem={renderRecipeItem}
@@ -91,28 +122,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  title: {
-    fontFamily: "psbold",
-    fontSize: 20,
-    marginTop: 12,
-    marginBottom: 8,
-  },
-  recipeItem: {
-    flexBasis: "auto",
-    padding: 8,
-    width: "50%",
-  },
-  recipeName: {
-    textAlign: "center",
-    marginTop: 12,
-    fontFamily: "psbold",
-    fontSize: 14,
-    color: "#67666D",
-  },
-  recipeList: {
-    paddingHorizontal: 8,
-    paddingBottom: 16,
   },
   title: {
     fontFamily: "psbold",
@@ -146,5 +155,75 @@ const styles = StyleSheet.create({
     fontFamily: "psbold",
     fontSize: 14,
     color: "#67666D",
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  orderCard: {
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    marginBottom: 4,
+  },
+  orderImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginRight: 16,
+  },
+  orderDetails: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  orderName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  orderQuantity: {
+    fontSize: 16,
+  },
+  totalContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 16,
+    paddingTop: 16,
+    marginHorizontal: 12,
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  totalPrice: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  topBarContainer: {
+    paddingHorizontal: 12,
+    paddingBottom: 8,
+  },
+  contentContainer: {
+    backgroundColor: "#FFFFFF",
+    padding: 12,
+  },
+  topBar: {
+    justifyContent: "space-between",
+    flexDirection: "row",
+    width: "60%",
+    alignItems: "center",
+    paddingBottom: 12,
+    flexDirection: "row",
+  },
+  titleText: {
+    fontFamily: "psbold",
+    fontSize: 20,
   },
 });

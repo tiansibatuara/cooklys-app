@@ -11,7 +11,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { auth, db } from "../config";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 const OrderScreen = () => {
   const [orders, setOrders] = useState([]);
@@ -37,7 +37,10 @@ const OrderScreen = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const q = query(collection(db, "orders"), where("uid", "==", myUserUid));
+        const q = query(
+          collection(db, "orders"),
+          where("uid", "==", myUserUid)
+        );
         const querySnapshot = await getDocs(q);
         const ordersData = querySnapshot.docs.map((doc) => doc.data());
         setOrders(ordersData);
@@ -53,7 +56,7 @@ const OrderScreen = () => {
   }, [navigation, myUserUid]);
 
   const handleOrderPress = (order) => {
-    console.log("Passed data: ", order)
+    console.log("Passed data: ", order);
     navigation.navigate("OrderDetail", { order });
   };
 
@@ -66,7 +69,10 @@ const OrderScreen = () => {
           </View>
         </View>
       </View>
-      <ScrollView styles={styles.contentContainer}>
+      <ScrollView
+        styles={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {orders.map((order, index) => (
           <View key={index} style={styles.orderContainer}>
             <Pressable
@@ -90,7 +96,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    // backgroundColor: "black", 
+    // backgroundColor: "black",
     backgroundColor: "white",
   },
   orderContainer: {

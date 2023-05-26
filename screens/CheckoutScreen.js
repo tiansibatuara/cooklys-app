@@ -18,7 +18,15 @@ import {
 } from "../CartReducer";
 import { decrementQty, incrementQty, emptyQty } from "../ProductReducer";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
-import { doc, setDoc, collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { auth, db } from "../config";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
 
@@ -29,7 +37,6 @@ const CheckoutScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
   const product = useSelector((state) => state.product.product);
   const [orders, setOrders] = useState([]);
-
 
   const total = cart
     .map((item) => item.quantity * item.price)
@@ -100,7 +107,10 @@ const CheckoutScreen = () => {
           </View>
         </View>
       </View>
-      <ScrollView style={styles.contentContainer}>
+      <ScrollView
+        style={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <View
           style={{
             // margin: 10,
@@ -150,15 +160,14 @@ const CheckoutScreen = () => {
             flexDirection: "row",
           }}
         >
-            <View>
-              <Ionicons name="cash-outline" size={24} color="black" />
-            </View>
-          
+          <View>
+            <Ionicons name="cash-outline" size={24} color="black" />
+          </View>
+
           <View>
             <Text style={styles.paymentMethod}>Cash</Text>
           </View>
         </View>
-    
       </ScrollView>
       <View style={{ paddingVertical: 8 }}>
         <View

@@ -21,7 +21,13 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { decrementQty, incrementQty } from "../ProductReducer";
 import { auth, db } from "../config";
-import { doc, collection, onSnapshot, updateDoc, getDocs } from "firebase/firestore";
+import {
+  doc,
+  collection,
+  onSnapshot,
+  updateDoc,
+  getDocs,
+} from "firebase/firestore";
 
 const ProductDetailScreen = () => {
   const navigation = useNavigation();
@@ -129,14 +135,23 @@ const ProductDetailScreen = () => {
           suppressHighlighting={true}
         />
       </View>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
         <View style={styles.namePriceContainer}>
           <Text style={styles.detailName}>{recipe.name}</Text>
           <Text style={styles.foodPrice}>{formatter.format(recipe.price)}</Text>
         </View>
-
-        <Text>{recipe.desc}</Text>
+        <View style={styles.descTitle}>
+          <Text style={styles.descName}>Alat dan Bahan</Text>
+          <Text>{recipe.materials}</Text>
+        </View>
+        <View style={styles.descTitle}>
+          <Text style={styles.descName}>Tutorial</Text>
+          <Text>{recipe.desc}</Text>
+        </View>
       </ScrollView>
 
       <View
@@ -150,6 +165,7 @@ const ProductDetailScreen = () => {
         {cart.some((c) => c.id === recipe.id) ? (
           <Pressable
             style={{
+              marginLeft: 12,
               flexDirection: "row",
               backgroundColor: "black",
               gap: 10,
@@ -185,29 +201,27 @@ const ProductDetailScreen = () => {
         ) : (
           <Pressable
             style={{
+              marginLeft: 12,
               flexDirection: "row",
               backgroundColor: "black",
               gap: 10,
               borderRadius: 13,
             }}
           >
-            <Pressable
-              // onPress={decrementQuantityHandler}
-              style={styles.quantityHandler}
-            >
-              <Text style={styles.textSymbol}>-</Text>
+            <Pressable onPress={addItemToCart} style={styles.quantityHandler}>
+              <Text style={styles.textSymbol}></Text>
             </Pressable>
 
-            <Text style={styles.textNumber}>
-              {product.find((item) => item.id === `${recipe.id}`).quantity}
-            </Text>
+            <Pressable onPress={addItemToCart}>
+              <Text style={styles.textNumber}>ADD TO CART</Text>
+            </Pressable>
 
             <Pressable
               onPress={addItemToCart}
               // onPress={incrementQuantityHandler}
               style={styles.quantityHandler}
             >
-              <Text style={styles.textSymbol}>+</Text>
+              <Text style={styles.textSymbol}></Text>
             </Pressable>
           </Pressable>
         )}
@@ -257,11 +271,29 @@ const styles = StyleSheet.create({
     fontFamily: "psbold",
     // backgroundColor: "red",
   },
-  foodPrice:{
+  descTitle: {
+    marginTop: 12,
+    alignContent: "center",
+    marginVertical: 4,
+  },
+  descName: {
+    fontSize: 20,
+    fontFamily: "psbold",
+    // backgroundColor: "red",
+  },
+  foodPrice: {
     paddingTop: 6,
     fontFamily: "psregular",
     fontSize: 18,
     alignItems: "center",
+    // backgroundColor: "red"
+  },
+  foodPriceTotal: {
+    paddingTop: 6,
+    fontFamily: "psregular",
+    fontSize: 18,
+    alignItems: "center",
+    marginRight: 12,
     // backgroundColor: "red"
   },
   quantityHandler: {
@@ -279,7 +311,7 @@ const styles = StyleSheet.create({
   textNumber: {
     fontSize: 16,
     color: "white",
-    paddingHorizontal: 8,
+    padding: 8,
     fontWeight: "bold",
   },
 });
