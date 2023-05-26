@@ -74,7 +74,7 @@ const CartScreen = () => {
             <View
               style={{
                 borderRadius: 12,
-                marginVertical: 8,
+                marginBottom: 8,
                 gap: 6,
               }}
             >
@@ -162,8 +162,6 @@ const CartScreen = () => {
                       </Text>
                     </View>
                   </View>
-
-                  {/* Button */}
                 </View>
               ))}
             </View>
@@ -294,10 +292,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   image: {
-    width: 100,
-    height: 75,
+    width: 68,
+    height: 68,
     borderRadius: 10,
-    resizeMode: "contain",
+    resizeMode: "cover",
   },
   innerContainer: {
     flexDirection: "column",

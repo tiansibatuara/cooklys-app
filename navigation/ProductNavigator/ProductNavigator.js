@@ -1,4 +1,5 @@
 import CartScreen from '../../screens/CartScreen';
+import Category from '../../screens/Category';
 import CheckoutScreen from '../../screens/CheckoutScreen';
 import HomeScreen from '../../screens/HomeScreen';
 import ProductDetailScreen from '../../screens/ProductDetailScreen';
@@ -19,6 +20,7 @@ const ProductNavigator = () => {
         <Stack.Screen options={{ headerShown: false }} name="SearchResults" component={SearchResultsScreen} />
         <Stack.Screen options={{ headerShown: false }} name="Cart" component={CartScreen} />
         <Stack.Screen options={{ headerShown: false }} name="Checkout" component={CheckoutScreen} />
+        <Stack.Screen options={{ headerShown: false }} name="Category" component={Category} />
       </Stack.Navigator>
   );
 };

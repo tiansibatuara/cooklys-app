@@ -36,7 +36,7 @@ const recipes = [
     name: "Iga Bakar",
     price: 100000,
     quantity: 0,
-    favorite: false,
+    favorite: true,
     category: "veg",
   },
   {

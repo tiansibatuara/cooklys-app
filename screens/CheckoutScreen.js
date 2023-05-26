@@ -7,26 +7,30 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   cleanCart,
+  decrementQuantity,
+  incrementQuantity,
   emptyQuantity,
 } from "../CartReducer";
-import {
-  getProducts,
-  resetQuantity,
-} from "../ProductReducer";
-import { useNavigation } from "@react-navigation/native";
-import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { decrementQty, incrementQty, emptyQty } from "../ProductReducer";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
+import { doc, setDoc, collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { auth, db } from "../config";
 import { Ionicons, Fontisto } from "@expo/vector-icons";
 
 const CheckoutScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const cart = useSelector((state) => state.cart.cart);
+  const product = useSelector((state) => state.product.product);
+  const [orders, setOrders] = useState([]);
+
+
   const total = cart
     .map((item) => item.quantity * item.price)
     .reduce((curr, prev) => curr + prev, 0);
@@ -35,32 +39,41 @@ const CheckoutScreen = () => {
 
   const userUid = auth.currentUser.uid;
 
-  //   const placeOrder = async () => {
-  //     navigation.navigate("Home");
-  //     dispatch(cleanCart());
-  //     await setDoc(
-  //       doc(db, "orders", `${userUid}`),
-  //       {
-  //         orders: { ...cart },
-  //       },
-  //       {
-  //         merge: true,
-  //       }
-  //     );
-  //   };
-
   const placeOrder = async () => {
-    navigation.navigate("Home");
+    navigation.navigate("Order");
+    // product.map((item) => {
+    //   dispatch(emptyQty(item))
+    // })
     dispatch(cleanCart());
-    dispatch(emptyQuantity()); // Reset quantity in cart
-    dispatch(resetQuantity());
     const orderData = {
       uid: userUid,
       orders: { ...cart },
     };
     const ordersCollectionRef = collection(db, "orders");
     await addDoc(ordersCollectionRef, orderData);
+    navigation.popToTop();
   };
+
+  useEffect(() => {
+    if (isFocused) {
+      // Fetch orders when the OrderScreen comes into focus
+      const fetchOrders = async () => {
+        try {
+          const q = query(
+            collection(db, "orders"),
+            where("uid", "==", userUid)
+          );
+          const querySnapshot = await getDocs(q);
+          const ordersData = querySnapshot.docs.map((doc) => doc.data());
+          setOrders(ordersData);
+        } catch (error) {
+          console.log("Error fetching orders:", error);
+        }
+      };
+
+      fetchOrders();
+    }
+  }, [isFocused, userUid]);
 
   const formatter = new Intl.NumberFormat(undefined, {
     style: "currency",
@@ -126,76 +139,31 @@ const CheckoutScreen = () => {
         </View>
         <View
           style={{
-            borderRadius: 12,
-            margin: 10,
-            padding: 10,
+            marginVertical: 4,
+            padding: 12,
             backgroundColor: "white",
             gap: 15,
             flexDirection: "row",
           }}
         >
-          <View
-            style={{
-              backgroundColor: "black",
-              width: 100,
-              height: 70,
-              borderRadius: 15,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <View
-              style={{
-                borderRadius: 25,
-                backgroundColor: "white",
-                padding: 10,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+            <View>
               <Ionicons name="cash-outline" size={24} color="black" />
             </View>
-          </View>
+          
           <View>
             <Text style={styles.paymentMethod}>Cash</Text>
-            <Text style={styles.discount}>No discount available</Text>
           </View>
         </View>
-        <View
-          style={{
-            borderRadius: 12,
-            margin: 10,
-            padding: 10,
-            backgroundColor: "white",
-            gap: 15,
-            flexDirection: "row",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "white",
-              width: 100,
-              height: 70,
-              borderRadius: 15,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Fontisto name="shopping-bag" size={60} color="black" />
-          </View>
-          <View>
-            <Text style={styles.paymentMethod}>Pickup</Text>
-            <Text style={styles.discount}>IDR 0</Text>
-          </View>
-        </View>
+    
       </ScrollView>
-      <View style={{ paddingVertical: 20 }}>
+      <View style={{ paddingVertical: 8 }}>
         <View
           style={{
             backgroundColor: "white",
             flexDirection: "row",
             justifyContent: "space-between",
-            padding: 20,
+            paddingHorizontal: 20,
+            marginBottom: 4,
           }}
         >
           <Text style={{ fontSize: 13 }}>Total</Text>
@@ -221,7 +189,7 @@ const CheckoutScreen = () => {
               textAlign: "center",
             }}
           >
-            Place Order
+            Check Out
           </Text>
         </Pressable>
       </View>
@@ -241,7 +209,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 10,
-    resizeMode: "contain",
+    resizeMode: "cover",
   },
   innerContainer: {
     flexDirection: "column",
@@ -285,7 +253,7 @@ const styles = StyleSheet.create({
     // backgroundColor: "black",
   },
   paymentMethod: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "bold",
     color: "black",
   },
@@ -303,11 +271,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     // paddingHorizontal: 12,
     backgroundColor: "#F5F5F5",
-  },
-  topBar: {
-    paddingBottom: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
   },
   header: {
     fontFamily: "psbold",
@@ -362,6 +325,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "63%",
     alignItems: "center",
+    paddingBottom: 12,
+    flexDirection: "row",
   },
   subtotalContainer: {
     justifyContent: "space-between",

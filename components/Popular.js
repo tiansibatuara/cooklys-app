@@ -7,14 +7,33 @@ import {
   FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import recipes from "../data/Recipes";
+// import recipes from "../data/Recipes";
 import { useNavigation } from "@react-navigation/native";
-// import { db } from "../config";
+import { db } from "../config";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../ProductReducer";
+import { collection, getDocs } from "firebase/firestore";
+
 
 const Popular = () => {
   const navigation = useNavigation();
+
+  const [recipes, setRecipes] = useState([]);
+
+  useEffect(() => { 
+    const fetchRecipes = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "recipes"));
+        const recipesData = querySnapshot.docs.map((doc) => doc.data());
+        setRecipes(recipesData);
+        console.log(recipesData)
+      } catch (error) {
+        console.log("Error fetching recipes:", error);
+      }
+    };
+
+    fetchRecipes();
+  }, []);
 
   const renderRecipeItem = ({ item }) => {
     const handleCardPress = () => {

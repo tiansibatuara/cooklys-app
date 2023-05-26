@@ -1,0 +1,30 @@
+category
+app
+main
+des
+veg
+mic
+
+desc
+1. Cara membuat{"\n"}2.Masukkan air
+
+id
+3 +++++
+
+image (duckduckgo copy image address)
+https://riotfest.org/wp-content/uploads/2016/10/Pizza-by-the-Harbour-in-Noblesville-IN_Pepperoni-and-Extra-Cheese-Pizza.jpg
+   
+isFavorite (booleam)
+true
+
+materials
+1. Blablabla 50gr{"\n"}2. Babi 100gr
+
+name
+Pizza
+
+price
+50000
+
+quantity (selalu 0)
+0

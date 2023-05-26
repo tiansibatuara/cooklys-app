@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
-import recipes from "../data/Recipes";
+// import recipes from "../data/Recipes";
 import { useSelector, useDispatch } from "react-redux";
 import {
   addToCart,
@@ -20,20 +20,51 @@ import {
 } from "../CartReducer";
 import { Ionicons } from "@expo/vector-icons";
 import { decrementQty, incrementQty } from "../ProductReducer";
-
-
-
+import { auth, db } from "../config";
+import { doc, collection, onSnapshot, updateDoc, getDocs } from "firebase/firestore";
 
 const ProductDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { recipe } = route.params;
-  console.log("recipe", recipe.id);
-  const [isFavorite, setIsFavorite] = useState(recipe.favorite);
+  console.log(recipe.isFavorite);
+
+  const [documentId, setDocumentId] = useState(null); // State to store the document ID
+
+  useEffect(() => {
+    const fetchRecipe = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "recipes"));
+        querySnapshot.forEach((doc) => {
+          const recipeData = doc.data();
+          if (recipeData.id === recipe.id) {
+            setDocumentId(doc.id);
+          }
+        });
+      } catch (error) {
+        console.log("Error fetching recipes:", error);
+      }
+    };
+
+    fetchRecipe();
+  }, [recipe]);
+
+  // ...
+
+  // const toggleFavorite = async () => {
+  //   try {
+  //     const docRef = doc(db, "recipes", documentId);
+  //     await updateDoc(docRef, { favorite: !isFavorite });
+  //     setIsFavorite(!isFavorite);
+  //   } catch (error) {
+  //     console.log("Error updating favorite status:", error);
+  //   }
+  // };
+
   const product = useSelector((state) => state.product.product);
 
   const dispatch = useDispatch();
-  
+
   const cart = useSelector((state) => state.cart.cart);
   const addItemToCart = () => {
     dispatch(addToCart(recipe)); // cart
@@ -49,21 +80,35 @@ const ProductDetailScreen = () => {
     navigation.navigate("Cart");
   };
 
-  const toggleFavorite = () => {
-    const updatedRecipe = {
-      ...recipe,
-      favorite: !isFavorite,
-    };
-    setIsFavorite(!isFavorite);
-    // Update the recipe in the recipes array if needed
-    const updatedRecipes = recipes.map((r) =>
-      r.id === updatedRecipe.id ? updatedRecipe : r
-    );
-    // Update the recipes array in your data source or state management
+  // const toggleFavorite = () => {
+  //   const updatedRecipe = {
+  //     ...recipe,
+  //     favorite: !isFavorite,
+  //   };
+  //   setIsFavorite(!isFavorite);
+  //   // Update the recipe in the recipes array if needed
+  //   const updatedRecipes = recipes.map((r) =>
+  //     r.id === updatedRecipe.id ? updatedRecipe : r
+  //   );
+  //   // Update the recipes array in your data source or state management
 
-    console.log("Updated Recipes:", updatedRecipes);
-  };
+  //   console.log("Updated Recipes:", updatedRecipes);
+  // };
 
+  // const toggleFavorite = () => {
+  //   const recipeDocRef = doc(db, 'recipes', recipe.id);
+  //   const newFavoriteStatus = !isFavorite;
+  //   setIsFavorite(newFavoriteStatus);
+
+  //   // Update the favorite status in Firestore
+  //   updateDoc(recipeDocRef, { favorite: newFavoriteStatus })
+  //     .then(() => {
+  //       console.log('Favorite status updated successfully');
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error updating favorite status:', error);
+  //     });
+  //   };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -75,25 +120,30 @@ const ProductDetailScreen = () => {
           color="black"
           suppressHighlighting={true}
         />
-          <Ionicons
-            onPress={handleCart}
-            name="ios-cart-outline"
-            size={32}
-            color="black"
-            // backgroundColor={"red"}
-            suppressHighlighting={true}
-          />
+        <Ionicons
+          onPress={handleCart}
+          name="ios-cart-outline"
+          size={32}
+          color="black"
+          // backgroundColor={"red"}
+          suppressHighlighting={true}
+        />
       </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
-        <Text style={styles.detailName}>{recipe.name}</Text>
-        <TouchableOpacity onPress={toggleFavorite}>
+        <View style={styles.namePriceContainer}>
+          <Text style={styles.detailName}>{recipe.name}</Text>
+          <Text style={styles.foodPrice}>{formatter.format(recipe.price)}</Text>
+        </View>
+
+        <Text>{recipe.desc}</Text>
+        {/* <TouchableOpacity onPress={()=>{}}>
           <MaterialIcons
             name={isFavorite ? "favorite" : "favorite-border"}
             size={24}
             color={isFavorite ? "red" : "black"}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
 
       <View
@@ -108,7 +158,7 @@ const ProductDetailScreen = () => {
           <Pressable
             style={{
               flexDirection: "row",
-              backgroundColor: "white",
+              backgroundColor: "black",
               gap: 10,
               borderRadius: 13,
             }}
@@ -121,19 +171,12 @@ const ProductDetailScreen = () => {
               // onPress={decrementQuantityHandler}
               style={styles.quantityHandler}
             >
-              <Text
-                style={styles.textSymbol}
-              >
-                -
-              </Text>
+              <Text style={styles.textSymbol}>-</Text>
             </Pressable>
 
-            <Text
-              style={styles.textNumber}
-            >
-              {product.find((item) => item.id === `${recipe.id}`).quantity }
+            <Text style={styles.textNumber}>
+              {product.find((item) => item.id === `${recipe.id}`).quantity}
             </Text>
-
             <Pressable
               onPress={() => {
                 console.log(recipe);
@@ -150,7 +193,7 @@ const ProductDetailScreen = () => {
           <Pressable
             style={{
               flexDirection: "row",
-              backgroundColor: "white",
+              backgroundColor: "black",
               gap: 10,
               borderRadius: 13,
             }}
@@ -162,9 +205,7 @@ const ProductDetailScreen = () => {
               <Text style={styles.textSymbol}>-</Text>
             </Pressable>
 
-            <Text
-              style={styles.textNumber}
-            >
+            <Text style={styles.textNumber}>
               {product.find((item) => item.id === `${recipe.id}`).quantity}
             </Text>
 
@@ -173,18 +214,14 @@ const ProductDetailScreen = () => {
               // onPress={incrementQuantityHandler}
               style={styles.quantityHandler}
             >
-              <Text
-                style={styles.textSymbol}
-              >
-                +
-              </Text>
+              <Text style={styles.textSymbol}>+</Text>
             </Pressable>
           </Pressable>
         )}
 
-        <Text style={styles.foodPrice}>
+        <Text style={styles.foodPriceTotal}>
           {formatter.format(
-            (product.find((item) => item.id === `${recipe.id}`).quantity) *
+            product.find((item) => item.id === `${recipe.id}`).quantity *
               product.find((item) => item.id === `${recipe.id}`).price
           )}
         </Text>
@@ -215,10 +252,21 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     height: 200,
   },
+  namePriceContainer: {
+    marginTop: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignContent: "center",
+  },
   detailName: {
     fontSize: 28,
     fontFamily: "psbold",
-    marginTop: 12,
+    backgroundColor: "red",
+  },
+  foodPrice:{
+    fontFamily: "psregular",
+    fontSize: 18,
+    backgroundColor: "red"
   },
   quantityHandler: {
     width: 26,
@@ -228,13 +276,13 @@ const styles = StyleSheet.create({
   },
   textSymbol: {
     fontSize: 16,
-    color: "#088F8F",
+    color: "white",
     paddingHorizontal: 6,
     textAlign: "center",
   },
-  textNumber :{
+  textNumber: {
     fontSize: 16,
-    color: "#088F8F",
+    color: "white",
     paddingHorizontal: 8,
     fontWeight: "bold",
   },

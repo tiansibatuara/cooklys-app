@@ -42,12 +42,10 @@ export const CartSlice = createSlice({
         itemPresent.quantity--;
       }
     },
-    emptyQuantity: (state) => {
+    cleanCart: (state) => {
       state.cart.forEach((item) => {
         item.quantity = 0;
       });
-    },
-    cleanCart: (state) => {
       state.cart = [];
     },
   },
@@ -58,7 +56,6 @@ export const {
   removeFromCart,
   incrementQuantity,
   decrementQuantity,
-  emptyQuantity,
   cleanCart,
 } = CartSlice.actions;
 

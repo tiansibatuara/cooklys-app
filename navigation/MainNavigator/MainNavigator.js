@@ -4,6 +4,7 @@ import ProductNavigator from "../ProductNavigator/ProductNavigator"
 import OrderScreen from "../../screens/OrderScreen";
 import FavoriteScreen from "../../screens/FavoriteScreen";
 import ProfileScreen from "../../screens/ProfileScreen";
+import OrderNavigator from "../OrderNavigator/OrderNavigator"
 
 const Tab = createBottomTabNavigator();
 
@@ -45,7 +46,7 @@ const MainNavigator = () => {
       />
       <Tab.Screen
         name="Order"
-        component={OrderScreen}
+        component={OrderNavigator}
         options={{
           tabBarLabel: "",
           tabBarIcon: ({ color, size }) => (

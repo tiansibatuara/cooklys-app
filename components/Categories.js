@@ -7,77 +7,42 @@ import {
   Image,
 } from "react-native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import categoryList from "../data/categoryList";
 
 const Categories = () => {
-  const categories = [
-    {
-      id: "0",
-      image: "https://cdn-icons-png.flaticon.com/128/2975/2975175.png",
-      name: "Appetizer",
-    },
-    {
-      id: "1",
-      image: "https://cdn-icons-png.flaticon.com/128/2975/2975175.png",
-      name: "Main\nCourse",
-    },
-    {
-      id: "2",
-      image: "https://cdn-icons-png.flaticon.com/128/2975/2975175.png",
-      name: "Dessert",
-    },
-    {
-      id: "3",
-      image: "https://cdn-icons-png.flaticon.com/128/2975/2975175.png",
-      name: "Vegan",
-    },
-    {
-      id: "4",
-      image: "https://cdn-icons-png.flaticon.com/128/2975/2975175.png",
-      name: "Michellin\nStar",
-    },
-  ];
+  const navigation = useNavigation();
 
+  const handlePress = (category) => {
+    console.log(category);
+    navigation.navigate("Category", { category });
+  };
+
+  console.log(categoryList.image);
   return (
     <View>
-      <Text style={{ fontFamily: "psbold", fontSize: 20 }}>Categories</Text>
+      <Text style={styles.title}>Categories</Text>
 
       <ScrollView
-        style={{ marginTop: 8 }}
+        style={styles.scrollView}
         horizontal
         showsHorizontalScrollIndicator={false}
       >
-        {categories.map((category, index) => (
-          <Pressable
-            style={{
-              flex: 1,
-              margin: 6,
-              width: 100,
-              borderWidth: 0.8,
-              borderColor: "#C0C0C0",
-              borderRadius: 100,
-              padding: 12,
-              alignItems: "center",
-            }}
-            key={index}
-          >
-            <Image
-              source={{ uri: category.image }}
-              style={{ width: 68, height: 68 }}
-            />
-            <Text
-              style={{
-                textAlign: "center",
-                marginTop: 12,
-                fontFamily: "psbold",
-                fontSize: 14,
-                color: "#67666D",
-              }}
+        {categoryList.map((categoryMap, index) => {
+          return (
+            <Pressable
+              style={({ pressed }) => [
+                styles.pressable,
+                pressed && styles.pressedStyle,
+              ]}
+              key={index}
+              onPress={() => handlePress(categoryMap.category)}
             >
-              {" "}
-              {category.name}{" "}
-            </Text>
-          </Pressable>
-        ))}
+              <Image source={categoryMap.uri} style={styles.image} />
+              <Text style={styles.label}>{categoryMap.label}</Text>
+            </Pressable>
+          );
+        })}
       </ScrollView>
     </View>
   );
@@ -85,4 +50,48 @@ const Categories = () => {
 
 export default Categories;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  title: {
+    fontFamily: "psbold",
+    fontSize: 20,
+  },
+  scrollView: {
+    marginTop: 8,
+  },
+  pressable: {
+    flex: 1,
+    margin: 6,
+    width: 100,
+    borderWidth: 0.8,
+    borderColor: "#C0C0C0",
+    borderRadius: 100,
+    padding: 12,
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  pressedStyle: {
+    opacity: 0.6,
+  },
+  image: {
+    width: 60,
+    height: 60,
+    resizeMode: "contain",
+    // backgroundColor: "black",
+    tintColor: "black",
+  },
+  label: {
+    textAlign: "center",
+    marginTop: 12,
+    fontFamily: "psbold",
+    fontSize: 14,
+    color: "#67666D",
+  },
+});
