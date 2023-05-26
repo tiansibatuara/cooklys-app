@@ -51,7 +51,11 @@ const CheckoutScreen = () => {
     };
     const ordersCollectionRef = collection(db, "orders");
     await addDoc(ordersCollectionRef, orderData);
-    navigation.popToTop();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Order" }],
+    });
+    // navigation.popToTop();
   };
 
   useEffect(() => {

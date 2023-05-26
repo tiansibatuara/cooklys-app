@@ -9,6 +9,7 @@ import {
   Image,
   Pressable,
   Alert,
+  SafeAreaView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../config";
@@ -22,15 +23,6 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
 
   const navigation = useNavigation();
-
-  // const register = () => {
-  //   if (name === "" || email === "" || password === "") {
-  //     Alert.alert('Invalid details', 'Please fill all the details', [
-  //       {text: 'OK', onPress: () => console.log('OK Pressed')},
-  //     ]);
-  //   }
-  //   handleSignUp;
-  // }
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -48,13 +40,13 @@ const RegisterScreen = () => {
       .then((userCredentials) => {
         const user = userCredentials.user;
         const myUserUid = user.uid;
-        const email = user.email;
+        const userEmail = user.email;
         console.log("Registered with:", user.email);
         console.log("UID: ", user.uid);
         console.log("User Credential: ", userCredentials);
 
         setDoc(doc(db, "users", `${myUserUid}`), {
-          email: email,
+          email: userEmail,
           name: name,
         });
       })
@@ -62,87 +54,116 @@ const RegisterScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <View style={styles.backButton}>
-        <MaterialIcons
-          onPress={() => navigation.goBack()}
-          name="arrow-back-ios"
-          size={24}
-          color="black"
-          suppressHighlighting={true}
-        />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topBarContainer}>
+        <View style={styles.topBar}>
+          <MaterialIcons
+            onPress={() => navigation.goBack()}
+            name="arrow-back-ios"
+            size={24}
+            color="black"
+            suppressHighlighting={true}
+          />
+          <View>
+            <Text style={styles.titleText}>Register</Text>
+          </View>
+        </View>
       </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Name"
-          value={name}
-          onChangeText={(text) => setName(text)}
-          style={styles.input}
-          returnKeyType="next"
-          onSubmitEditing={() => {
-            this.secondTextInput.focus();
-          }}
-        />
-        <TextInput
-          ref={(input) => {
-            this.secondTextInput = input;
-          }}
-          placeholder="Email"
-          value={email}
-          autoCapitalize="none"
-          autoCorrect={false}
-          returnKeyType="next"
-          onSubmitEditing={() => {
-            this.thirdTextInput.focus();
-          }}
-          onChangeText={(text) => setEmail(text)}
-          style={styles.input}
-        />
-        <TextInput
-          ref={(input) => {
-            this.thirdTextInput = input;
-          }}
-          placeholder="Password"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          style={styles.input}
-          returnKeyType="next"
-          onSubmitEditing={handleSignUp}
-          secureTextEntry
-        />
-      </View>
+      <KeyboardAvoidingView style={styles.contentContainer} behavior="padding">
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Name"
+              value={name}
+              onChangeText={(text) => setName(text)}
+              style={styles.input}
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                this.secondTextInput.focus();
+              }}
+            />
+            <TextInput
+              ref={(input) => {
+                this.secondTextInput = input;
+              }}
+              placeholder="Email"
+              value={email}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                this.thirdTextInput.focus();
+              }}
+              onChangeText={(text) => setEmail(text)}
+              style={styles.input}
+            />
+            <TextInput
+              ref={(input) => {
+                this.thirdTextInput = input;
+              }}
+              placeholder="Password"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              style={styles.input}
+              returnKeyType="next"
+              onSubmitEditing={handleSignUp}
+              secureTextEntry
+            />
+          </View>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          onPress={handleSignUp}
-          style={[styles.button, styles.buttonOutline]}
-        >
-          <Text style={styles.buttonOutlineText}>Register</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={handleSignUp} style={styles.button}>
+              <Text style={styles.buttonText}>Register</Text>
+            </TouchableOpacity>
+          </View>
 
-      <Pressable
-        onPress={() => navigation.replace("Login")}
-        style={{ marginTop: 20 }}
-      >
-        <Text>Already have an account? Sign In!</Text>
-      </Pressable>
-    </KeyboardAvoidingView>
+          <View style={styles.bottomContainer}>
+            <Pressable
+              onPress={() => navigation.replace("Login")}
+              style={styles.pressable}
+            >
+              <Text style={styles.pressableText}>
+                Already have an account? Sign In!
+              </Text>
+            </Pressable>
+          </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
-
-export default RegisterScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#febf55",
+  },
+  contentContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#febf55", // Set background color to blue
+    padding: 12,
+  },
+  topBarContainer: {
+    paddingHorizontal: 12,
+    paddingBottom: 8, // PENTING SAMAIN
+    backgroundColor: "transparent",
+  },
+  topBar: {
+    justifyContent: "space-between",
+    flexDirection: "row",
+    width: "60%",
+    alignItems: "center",
+    paddingBottom: 12,
+    flexDirection: "row",
+    backgroundColor: "transparent",
+  },
+  titleText: {
+    fontFamily: "psbold",
+    fontSize: 20,
   },
   inputContainer: {
     width: "80%",
+    marginBottom: 20,
   },
   input: {
     backgroundColor: "white",
@@ -155,7 +176,7 @@ const styles = StyleSheet.create({
     width: "60%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: "#0782F9",
@@ -164,26 +185,21 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
   },
-  buttonOutline: {
-    backgroundColor: "white",
-    marginTop: 5,
-    borderColor: "#4169E1",
-    borderWidth: 2,
-  },
   buttonText: {
     color: "white",
     fontWeight: "700",
     fontSize: 16,
   },
-  buttonOutlineText: {
-    color: "#4169E1",
-    fontWeight: "700",
+  bottomContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pressable: {
+    marginTop: 20,
+  },
+  pressableText: {
     fontSize: 16,
   },
-  backButton: {
-    position: "absolute",
-    top: 60,
-    left: 12,
-    zIndex: 1,
-  },
 });
+
+export default RegisterScreen;

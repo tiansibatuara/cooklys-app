@@ -137,13 +137,6 @@ const ProductDetailScreen = () => {
         </View>
 
         <Text>{recipe.desc}</Text>
-        {/* <TouchableOpacity onPress={()=>{}}>
-          <MaterialIcons
-            name={isFavorite ? "favorite" : "favorite-border"}
-            size={24}
-            color={isFavorite ? "red" : "black"}
-          />
-        </TouchableOpacity> */}
       </ScrollView>
 
       <View
@@ -257,16 +250,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignContent: "center",
+    marginVertical: 4,
   },
   detailName: {
     fontSize: 28,
     fontFamily: "psbold",
-    backgroundColor: "red",
+    // backgroundColor: "red",
   },
   foodPrice:{
+    paddingTop: 6,
     fontFamily: "psregular",
     fontSize: 18,
-    backgroundColor: "red"
+    alignItems: "center",
+    // backgroundColor: "red"
   },
   quantityHandler: {
     width: 26,

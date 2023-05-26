@@ -12,6 +12,10 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import recipes from "../data/Recipes";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../config";
+
+
 
 const SearchResultsScreen = () => {
   const navigation = useNavigation();
